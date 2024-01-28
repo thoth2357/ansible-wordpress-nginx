@@ -3,11 +3,14 @@
   hosts: your_server
   become: yes
   vars:
-    domain_name: your_domain.com
-    mysql_root_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=16') }}"
-    wp_db_name: wordpress
-    wp_db_user: wordpressuser
+    domain_name: your.domain.com
+    subdomain: your.subdomain.com
+    mariadb_root_password: "your_mariadb_root_password"
+    wp_db_name: your_database_name
+    wp_db_user: your_database_user
     wp_db_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=16') }}"
+    php_version: "8.1"
+    SSL_EMAIL: your.email@domain.com
 
   tasks:
     - name: Update apt cache
@@ -56,4 +59,59 @@
     - name: Configure wp-config.php
       template:
         src: wp-config.php.j2
-        dest: /var/www/html/wordpress/wp-config.php
+        dest: /var/www/{{ domain_name }}/wp-config.php
+        owner: www-data
+        group: www-data
+        mode: '0640'
+
+    - name: Ensure Nginx service is running
+      systemd:
+        name: nginx
+        enabled: yes
+
+    - name: Set up Nginx configuration
+      template:
+        src: wordpress.conf.j2
+        dest: /etc/nginx/conf.d/{{ domain_name }}.conf
+      notify: Reload Nginx
+
+    - name: Install Certbot
+      apt:
+        name:
+          - certbot
+          - python3-certbot-nginx
+        state: present
+
+    - name: Obtain SSL certificate
+      command: certbot --nginx -d {{ domain_name }} -m {{ SSL_EMAIL }} --agree-tos --non-interactive --redirect
+
+    - name: Install phpMyAdmin
+      apt:
+        name: phpmyadmin
+        state: present
+
+    - name: Create symlink for phpMyAdmin
+      file:
+        src: /usr/share/phpmyadmin
+        dest: /var/www/{{ subdomain }}
+        state: link
+
+    - name: Configure Nginx for phpMyAdmin
+      template:
+        src: phpmyadmin.conf.j2
+        dest: /etc/nginx/conf.d/{{ subdomain }}.conf
+      notify: Reload Nginx
+
+    - name: Obtain SSL certificate for phpMyAdmin
+      command: certbot --nginx -d {{ subdomain }} -m {{ SSL_EMAIL }} --agree-tos --non-interactive --redirect
+
+  handlers:
+    - name: Reload Nginx
+      systemd:
+        name: nginx
+        state: reloaded
+
+    - name: Restart PHP-FPM
+      systemd:
+        name: "php{{ php_version }}-fpm"
+        state: restarted
