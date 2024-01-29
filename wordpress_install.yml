@@ -75,36 +75,7 @@
         dest: /etc/nginx/conf.d/{{ domain_name }}.conf
       notify: Reload Nginx
 
-    - name: Install Certbot
-      apt:
-        name:
-          - certbot
-          - python3-certbot-nginx
-        state: present
-
-    - name: Obtain SSL certificate
-      command: certbot --nginx -d {{ domain_name }} -m {{ SSL_EMAIL }} --agree-tos --non-interactive --redirect
-
-    - name: Install phpMyAdmin
-      apt:
-        name: phpmyadmin
-        state: present
-
-    - name: Create symlink for phpMyAdmin
-      file:
-        src: /usr/share/phpmyadmin
-        dest: /var/www/{{ subdomain }}
-        state: link
-
-    - name: Configure Nginx for phpMyAdmin
-      template:
-        src: phpmyadmin.conf.j2
-        dest: /etc/nginx/conf.d/{{ subdomain }}.conf
-      notify: Reload Nginx
-
-    - name: Obtain SSL certificate for phpMyAdmin
-      command: certbot --nginx -d {{ subdomain }} -m {{ SSL_EMAIL }} --agree-tos --non-interactive --redirect
-
+    
   handlers:
     - name: Reload Nginx
       systemd:
