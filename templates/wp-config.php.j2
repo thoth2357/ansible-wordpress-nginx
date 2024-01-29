@@ -1,0 +1,23 @@
+<?php
+define( 'DB_NAME', '{{ wp_db_name }}' );
+define( 'DB_USER', '{{ wp_db_user }}' );
+define( 'DB_PASSWORD', '{{ wp_db_password }}' );
+define( 'DB_HOST', 'localhost' );
+define( 'DB_CHARSET', 'utf8' );
+define( 'DB_COLLATE', '' );
+
+{% for line in lookup('url', 'https://api.wordpress.org/secret-key/1.1/salt/').split('\n') %}
+{{ line }}
+{% endfor %}
+
+$table_prefix = 'wp_';
+
+define( 'WP_DEBUG', false );
+
+define('FS_METHOD', 'direct');
+
+if ( ! defined( 'ABSPATH' ) ) {
+    define( 'ABSPATH', __DIR__ . '/' );
+}
+
+require_once ABSPATH . 'wp-settings.php';
