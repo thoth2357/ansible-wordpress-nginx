@@ -39,4 +39,21 @@
           - php-cgi
         state: present
 
+    - name: Download and extract WordPress
+      unarchive:
+        src: https://wordpress.org/latest.tar.gz
+        dest: /var/www/html/wordpress
+        remote_src: yes
     
+    - name: Set correct permissions for WordPress files
+      file:
+        path: /var/www/html/wordpress
+        owner: www-data
+        group: www-data
+        mode: '0755'
+        recurse: yes
+    
+    - name: Configure wp-config.php
+      template:
+        src: wp-config.php.j2
+        dest: /var/www/html/wordpress/wp-config.php
