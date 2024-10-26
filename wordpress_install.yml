@@ -1,0 +1,42 @@
+---
+- name: Install WordPress with Nginx
+  hosts: your_server
+  become: yes
+  vars:
+    domain_name: your_domain.com
+    mysql_root_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=16') }}"
+    wp_db_name: wordpress
+    wp_db_user: wordpressuser
+    wp_db_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=16') }}"
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - nginx
+          - mariadb-server
+          - php-fpm
+          - php-mysql
+          - php-common
+          - php-xml
+          - php-xmlrpc
+          - php-curl
+          - php-gd
+          - php-imagick
+          - php-cli
+          - php-dev
+          - php-imap
+          - php-mbstring
+          - php-opcache
+          - php-readline
+          - php-soap
+          - php-zip
+          - php-json
+          - php-cgi
+        state: present
+
+    
