@@ -58,7 +58,7 @@
     
     - name: Configure wp-config.php
       template:
-        src: wp-config.php.j2
+        src: templates/wp-config.php.j2
         dest: /var/www/{{ domain_name }}/wp-config.php
         owner: www-data
         group: www-data
@@ -71,7 +71,7 @@
 
     - name: Set up Nginx configuration
       template:
-        src: wordpress.conf.j2
+        src: templates/wordpress.conf.j2
         dest: /etc/nginx/conf.d/{{ domain_name }}.conf
       notify: Reload Nginx
 
@@ -98,7 +98,7 @@
 
     - name: Configure Nginx for phpMyAdmin
       template:
-        src: phpmyadmin.conf.j2
+        src: templates/phpadmin.conf.j2
         dest: /etc/nginx/conf.d/{{ subdomain }}.conf
       notify: Reload Nginx
 
