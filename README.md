@@ -105,7 +105,7 @@ git clone <repository-url>
 
 ```1:2:inventory.ini
 [wordpress_servers]
-staging_server ansible_host=5.161.95.231 ansible_user=devops ansible_ssh_private_key_file=~/.ssh/OSI-LMS
+staging_server ansible_host=your_server_ip ansible_user=your_user ansible_ssh_private_key_file=path_to_key
 ```
 
 
