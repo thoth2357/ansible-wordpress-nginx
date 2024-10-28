@@ -120,7 +120,7 @@ staging_server ansible_host=your_server_ip ansible_user=your_user ansible_ssh_pr
     wp_db_user: OsiTestUser
     wp_db_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=16') }}"
     php_version: "8.1"
-    SSL_EMAIL: devops@hordanso.com
+    SSL_EMAIL: email@example.com
 ```
 
 
